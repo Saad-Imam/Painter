@@ -36,6 +36,7 @@ public class Board extends JPanel implements ActionListener , MouseInputListener
     private LayersToolbar layersToolbar;
     static boolean open_window;
     GradientWindow gradient;
+    Tooltip tooltip;
     private class TAdapter extends KeyAdapter {
 
         @Override
@@ -88,6 +89,7 @@ public class Board extends JPanel implements ActionListener , MouseInputListener
         layersToolbar = new LayersToolbar(screenSize.width - 350, 5, 300, screenSize.height, pressed.getImage(), depressed.getImage(),Color.GRAY );
         gradient = GradientWindow.getInstance();
         openWindow = new Window(200, 200,200, 300, Color.GRAY );
+        tooltip =  Tooltip.getInstance();
 
     }
 
@@ -143,7 +145,7 @@ public class Board extends JPanel implements ActionListener , MouseInputListener
         layersToolbar.paint(g);
         gradient.paint(g);
         openWindow.paint(g);
-
+        tooltip.paint(g);
     }
     private void drawButton(Graphics g, Button  par) {
 
@@ -207,7 +209,9 @@ public class Board extends JPanel implements ActionListener , MouseInputListener
     }
 
 	@Override
-	public void mouseMoved(MouseEvent e) {}
+	public void mouseMoved(MouseEvent e) {
+        shapesToolbar.Moved(e.getX(), e.getY());
+    }
     private void drawFileMenu(Graphics g) {
         g.drawImage(fileMenu.GetImage(), fileMenu.x, fileMenu.y, this);
         g.setColor(fileMenu.getColor());

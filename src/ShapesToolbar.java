@@ -42,6 +42,15 @@ public class ShapesToolbar extends Toolbar{
 
     @Override
     public void Moved(int x, int y) {
+        Tooltip.getCoords(x,y);
+        String[] shapes = {"Right Angled Triangle", "Equilateral Triangle","Rectangle", "Circle","Pentagram","Hexagon"};
+        String info = "";
+        for (int i = 0; i < 6; i++) {
+            if ( x > array1[i].x && x < array1[i].x + array1[i].width && y >array1[i].y && y < array1[i].y +array1[i].height ){
+                    info = shapes[i];
+            }
+        }
+        Tooltip.getInfo(info);
 
     }
 }
