@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class EditMenu extends Menu{
+public class EditMenu extends Menu implements ToolBarListener{
 
     ImageIcon edit = new ImageIcon("src/Images/myimage_edit.png");
     private ImageIcon undo = new ImageIcon("src/Images/myimage_undo.png");
@@ -45,5 +45,22 @@ public class EditMenu extends Menu{
 
     public Color getColor() {
         return color;
+    }
+
+    @Override
+    public void Clicked(int x, int y) {}
+    @Override
+    public void Pressed(int x, int y) {}
+    @Override
+    public void Released(int x, int y) {}
+    @Override
+    public void Moved(int x, int y) {
+        Tooltip.getCoords(x,y);
+        String info = "";
+        if (x > this.x && x < this.x + this.width && y >this.y && y < this.y + this.height ){
+            info = "Edit";
+        }
+        Tooltip.getInfo(info);
+
     }
 }

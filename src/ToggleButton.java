@@ -7,6 +7,10 @@ public class ToggleButton extends Button{
         this.color = color;
     }
 
+    public ToggleButton(int x, int y, int width, int height) {
+        super(x,y,width,height);
+    }
+
     public Boolean IsPressed()
     {
         return pressed;

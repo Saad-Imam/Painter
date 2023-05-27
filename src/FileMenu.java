@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class FileMenu extends Menu{
+public class FileMenu extends Menu implements ToolBarListener{
 
     private ImageIcon New = new ImageIcon("src/Images/myimage_new.jpg");
     private ImageIcon open = new ImageIcon("src/Images/myimage_open.png");
@@ -9,6 +9,7 @@ public class FileMenu extends Menu{
     private ImageIcon file = new ImageIcon("src/Images/myimage_file.png");
     private Button [] array;
     private Color color;
+    Button new_, open_, save_;
 
 
     public FileMenu(int x, int y, int width, int height, Color color) {
@@ -20,11 +21,11 @@ public class FileMenu extends Menu{
     {
         if(x > this.x && x < this.x + width && y > this.y && y < this.y + height)
         {
-            Button new_ = new Button(this.x, this.y + height + 5, New.getIconWidth(), New.getIconHeight(), New.getImage(), New.getImage(), color);
-            Button open_ = new Button(this.x, new_.y + New.getIconHeight() + 5, open.getIconWidth(), open.getIconHeight(), open.getImage(), open.getImage(), color);
-            Button save_ = new Button(this.x, open_.y + open.getIconHeight() + 5, save.getIconWidth(), save.getIconHeight(), save.getImage(), save.getImage(), color);
-            array = new Button[]{new_, open_, save_};
-            return true;
+             new_ = new Button(this.x, this.y + height + 5, New.getIconWidth(), New.getIconHeight(), New.getImage(), New.getImage(), color);
+             open_ = new Button(this.x, new_.y + New.getIconHeight() + 5, open.getIconWidth(), open.getIconHeight(), open.getImage(), open.getImage(), color);
+             save_ = new Button(this.x, open_.y + open.getIconHeight() + 5, save.getIconWidth(), save.getIconHeight(), save.getImage(), save.getImage(), color);
+             array = new Button[]{new_, open_, save_};
+             return true;
         }
         else return false;
     }
@@ -47,5 +48,25 @@ public class FileMenu extends Menu{
     }
     public Color getColor() {
         return color;
+    }
+
+    @Override
+    public void Clicked(int x, int y) {}
+
+    @Override
+    public void Pressed(int x, int y) {}
+
+    @Override
+    public void Released(int x, int y) {}
+
+    @Override
+    public void Moved(int x, int y) {
+        Tooltip.getCoords(x,y);
+        String info = "";
+            if (x > this.x && x < this.x + this.width && y >this.y && y < this.y + this.height ){
+                info = "File";
+            }
+            Tooltip.getInfo(info);
+
     }
 }

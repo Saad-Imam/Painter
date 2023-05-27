@@ -13,14 +13,17 @@ public class ColorsToolbar extends Toolbar{
     static Button custom3;
     static Button custom4;
     static Button custom5;
-    private static Button stroke;
-    private static Button fill;
+    static Button stroke;
+    static Button fill;
     private Color toolbar_color;
+    private Grid grid;
+    private StrokeSize strokeSize;
     boolean flag;
     Button [] array3;
     Image pressed;
     Image depressed;
     Image gradientPic= new ImageIcon("src/Images/gradient.png").getImage();
+    Image strokePic = new ImageIcon("src/Images/stroke size.jpg").getImage();
 
     public ColorsToolbar(int x, int y, int width, int height, Image pressed, Image depressed, Color color) {
         super(x, y, width, height, pressed, depressed, color);
@@ -57,10 +60,13 @@ public class ColorsToolbar extends Toolbar{
         fill = new Button(blue.x + blue.width + 15, blue.y , pressed.getWidth(null) , pressed.getHeight(null) , depressed, pressed, Color.WHITE);
         stroke = new Button(fill.x + fill.getWidth() + 10, fill.y , pressed.getWidth(null) , pressed.getHeight(null), depressed, pressed, Color.WHITE);
         gradient = new Gradient(stroke.x + stroke.width + 10,stroke.y , gradientPic.getWidth(null), gradientPic.getHeight(null),gradientPic,gradientPic);
-        array3 = new Button[]{ gradient};
         selectedColor = fill;
         Buttons.add(fill);
         Buttons.add(stroke);
+        grid = new Grid(gradient.x + gradient.width + 10 , gradient.y, pressed.getWidth(null), pressed.getHeight(null), depressed, pressed, toolbar_color);
+        strokeSize = new StrokeSize(grid.x + grid.width + 10, grid.y, strokePic.getWidth(null),strokePic.getHeight(null), strokePic, strokePic, toolbar_color);
+        array3 = new Button[]{ gradient, grid, strokeSize};
+
 
     }
 
@@ -100,7 +106,7 @@ public class ColorsToolbar extends Toolbar{
 
        for(Button button: array3){
            g.drawImage(button.GetImage(), button.x, button.y, null);
-
+           button.paint(g);
        }
        g.setColor(Color.WHITE);
        Font font = new Font("Serif", Font.BOLD, 15);
@@ -108,6 +114,8 @@ public class ColorsToolbar extends Toolbar{
        g.drawString("Fill", fill.x + 20, fill.y + fill.width + 15);
        g.drawString("Stroke", stroke.x + 12, stroke.y + stroke.width + 15);
        g.drawString("Gradient",gradient.x + 2, gradient.y + gradient.width + 20);
+       g.drawString("Grid size",grid.x + 2, grid.y + grid.width + 20);
+       g.drawString("Stroke size",strokeSize.x + 2, strokeSize.y + strokeSize.width + 20);
 
     }
     @Override
@@ -126,9 +134,12 @@ public class ColorsToolbar extends Toolbar{
             flag = true;
         }
         else if (gradient.IsClicked(x,y)){
-                    gradient.clicked(x,y);
+            gradient.clicked(x,y);
         }
+        else if (grid.IsClicked(x,y)){
+            grid.clicked(x,y);
 
+        }
         for (int i = 0; i < Buttons.size(); i++) {
             if (Buttons.get(i).IsClicked(x,y))
             {
@@ -156,6 +167,24 @@ public class ColorsToolbar extends Toolbar{
 
     @Override
     public void Moved(int x, int y) {
+        Tooltip.getCoords(x,y);
+        String info = "";
+        for (Button button : Buttons) {
+            if ( x > button.x && x < button.x + button.width && y >button.y && y < button.y + button.height ){
+                info = "R: " + button.getColor().getRed() + " G: " + button.getColor().getGreen() + " B: " + button.getColor().getBlue();
+            }
+        }
+        if ( x > gradient.x && x < gradient.x + gradient.width && y >gradient.y && y < gradient.y + gradient.height ){
+            info = "Gradient";
+        }
+        else if ( x > grid.x && x < grid.x + grid.width && y >grid.y && y < grid.y + grid.height ){
+            info = "Grid size";
+        }
+        else if ( x > strokeSize.x && x < strokeSize.x + strokeSize.width && y >strokeSize.y && y < strokeSize.y + strokeSize.height ){
+            info = "Stroke size";
 
+        }
+
+        Tooltip.getInfo(info);
     }
 }

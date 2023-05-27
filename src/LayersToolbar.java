@@ -15,16 +15,25 @@ public class LayersToolbar extends Toolbar{
     static LinkedList<Layer> layers = new LinkedList<>();
     private Layer layer;
     Color color;
+    public Button selected;
+    public Stack<Shape> selectedStack;
+    Board b;
 
 
 
-    public LayersToolbar(int x, int y, int width, int height,Image pressed, Image depressed, Color color) {
+    public LayersToolbar(int x, int y, int width, int height,Image pressed, Image depressed, Color color, Board b) {
         super(x, y, width, height, depressed, pressed, color);
+        this.b = b;
         this.depressed = depressed.getScaledInstance(300,50,Image.SCALE_FAST);
         this.pressed = pressed.getScaledInstance(300,50,Image.SCALE_FAST);
         load_buttons();
         add();
         this.color = color;
+        if (b.layer.size() == 0)
+            b.layer.add(new Stack<>());
+
+        selected = layers.get(0);
+        selectedStack = b.layer.get(0);
     }
 
     void load_buttons(){
@@ -53,14 +62,20 @@ public class LayersToolbar extends Toolbar{
         for (Layer layer : layers) {
             layer.paint(g);
         }
+
+
     }
 
     public void add () {
         if (layers.size() == 0)
             num = 1;
-        Layer newLayer = new Layer(x, 160, width, 50, "Layer " + num,depressed,pressed);
-
+        Layer newLayer = new Layer(x, down.y + down.height, width, 50, "Layer " + num,depressed,pressed);
+        b.layer.add(new Stack<Shape>());
+        System.out.println(b.layer.size());
         layers.add(newLayer);
+        selected = layers.get(layers.size() - 1);
+        selectedStack = b.layer.get(b.layer.size() - 1);
+
         layer = newLayer;
         layer.current_image = pressed;
         num++;
@@ -72,32 +87,82 @@ public class LayersToolbar extends Toolbar{
 
     public void remove () {
         if (layer != null) {
-            int index = layers.indexOf(layer);
-            System.out.println(index);
-            if (layers.size() > 1) // last layer not removed
-            {
-                layers.remove(layer);
-                layer = null;
-
-                for (int i = index-1; i >= 0; i--)
-                {
-                    Layer layer = layers.get(i);
-                    if (layer.y >= 250)
-                        layer.y -= 60;
+            if (layers.size() > 1) {
+                int i = layers.indexOf(selected);
+                layers.remove(i);
+                b.layer.remove(i);
+                for (int j = i; j < layers.size(); j++)
+                    layers.get(j).y += 32;
+                if (i > 0) {
+                    selected = layers.get(i - 1);
+                    selectedStack = b.layer.get(i - 1);
+                } else {
+                    selected = layers.get(i);
+                    selectedStack = b.layer.get(i);
                 }
 
                 // assigning a current layer
                 if (!layers.isEmpty()) {
-                    if (index == layers.size()) {
-                        layer = layers.get(index - 1); // if top layer removed
+                    if (i == layers.size()) {
+                        layer = layers.get(i - 1); // if top layer removed
                     } else {
-                        layer = layers.get(index); // middle layers
+                        layer = layers.get(i); // middle layers
                     }
-                        layer.current_image = pressed;
+                    layer.current_image = pressed;
+                }
+            }
+
+        }
+    }
+        //layerIndex--;
+
+
+    public void moveUp() {
+        if (layers.size() > 1) {
+            for (int i = 0; i < b.layer.size() - 1; i++) {
+                if (b.layer.get(i) == selectedStack) {
+                    Stack temp = b.layer.get(i);
+                    b.layer.set(i, b.layer.get(i + 1));
+                    b.layer.set(i + 1, temp);
+                    break;
+                }
+            }
+            for (int i = 0; i < layers.size() - 1; i++) {
+                if (layers.get(i) == selected) {
+                    layers.get(i).y -= 32;
+                    layers.get(i + 1).y += 32;
+
+                    Layer button = layers.get(i);
+                    layers.set(i, layers.get(i + 1));
+                    layers.set(i + 1, button);
+                    return;
                 }
             }
         }
-        //layerIndex--;
+    }
+
+    public void moveDown() {
+        if (layers.size() > 1) {
+            for (int i = 1; i < b.layer.size(); i++) {
+                if (b.layer.get(i) == selectedStack) {
+                    Stack temp = b.layer.get(i);
+                    b.layer.set(i, b.layer.get(i - 1));
+                    b.layer.set(i - 1, temp);
+                    break;
+                }
+            }
+            for (int i = 1; i < layers.size(); i++) {
+                if (layers.get(i) == selected) {
+                    layers.get(i).y += 32;
+                    layers.get(i - 1).y -= 32;
+
+                    Layer button = layers.get(i);
+                    layers.set(i, layers.get(i - 1));
+                    layers.set(i - 1, button);
+                    return;
+                }
+            }
+        }
     }
 
     public void raise () {
@@ -160,9 +225,11 @@ public class LayersToolbar extends Toolbar{
         } else if (remove.IsClicked(x, y)) {
             remove();
         } else if (up.IsClicked(x, y)) {
-            raise();
+//            raise();
+            moveUp();
         } else if (down.IsClicked(x, y)) {
-            lower();
+            //lower();
+            moveDown();
         }
     }
     @Override
@@ -173,8 +240,22 @@ public class LayersToolbar extends Toolbar{
     down.IsReleased(x,y);
     }
 
+
     @Override
     public void Moved(int x, int y) {
 
+        Tooltip.getCoords(x,y);
+        String info = "";
+
+        if(x > add.x && x < add.x + add.width  && y > add.y && y < add.y + add.height)
+            info = "Add Layer";
+        else if(x > remove.x && x < remove.x + remove.width  && y > remove.y && y < remove.y + remove.height)
+            info = "Remove Layer";
+        else if(x > up.x && x < up.x + up.width  && y > up.y && y < up.y + up.height)
+            info = "Raise Layer";
+        else if(x > down.x && x < down.x + down.width  && y > down.y && y < down.y + down.height)
+            info = "Lower Layer";
+
+        Tooltip.getInfo(info);
     }
 }

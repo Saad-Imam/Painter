@@ -9,8 +9,10 @@ public class Button
 	Image image_depressed;
 	Image image_pressed;
  	Image current_image;
+	private Color lineColor;
 	boolean pressed;
 	Color color;
+
 
 	public Button(int x, int y, int width, int height, Image i_depressed, Image i_pressed, Color color)
 	{
@@ -22,7 +24,15 @@ public class Button
 		image_pressed = i_pressed;
 		current_image = i_depressed;
 		this.color = color;
-	}	
+	}
+
+	public Button(int x, int y, int width, int height) {
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+
+	}
 
 	public Image GetImage() 
 	{
@@ -78,6 +88,10 @@ public class Button
 	}
 
 
+
+	public void setLineColor(Color lineColor) {
+		this.lineColor = lineColor;
+	}
 
 
 }
